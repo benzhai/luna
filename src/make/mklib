@@ -1,0 +1,30 @@
+LIB ?= lib$(PROG).a
+
+include $(MKDIR)/mkvar
+
+CFLAGS  += -DMAKELIB -g -Wall \
+	-I$(SRCDIR)/libs/boots \
+	-I$(SRCDIR)/libs/pub \
+	-I$(SRCDIR)/libs/zebra \
+	-I$(SRCDIR)/itf \
+	-I$(SRCDIR)/pid \
+	-I$(SRCDIR)/fct \
+	-I$(SRCDIR)/acl \
+	-I$(SRCDIR)/main
+
+
+all: $(PMK) $(LIB) 
+%.c: 
+
+%.o: %.c
+	$(CC) $(CFLAGS) $(EFLAGS) -c $< -o $@ 
+
+
+$(LIB): $(OBJS)
+	$(AR) -rcs $@ $^
+
+clean: $(PCLEAN) $(VCLEAN)
+	rm -rf *.o
+	rm -rf *.a
+	rm -rf $(PROG)
+
