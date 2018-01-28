@@ -8,9 +8,9 @@ berr pid_udp(struct pbuf *p, hytag_t *hytag, int inner_outer)
 	if(check_pbuf_len(p, UDP_HLEN))
 	{
         if(inner_outer == HEADER_OUTER)
-            pid_incr_count(OUTERL4_HD);//drop packet and incr counter, then return;
+            cnt_inc(OUTERL4_HD);//drop packet and incr counter, then return;
         else
-            pid_incr_count(INNERL4_HD);
+            cnt_inc(INNERL4_HD);
 		BRET(E_EXCEED);
 	}
 
@@ -21,14 +21,14 @@ berr pid_udp(struct pbuf *p, hytag_t *hytag, int inner_outer)
 		/* convert src and dest ports to host byte order */
 	  	hytag->outer_srcport= ntohs(udphdr->src);
 	  	hytag->outer_dstport= ntohs(udphdr->dest);
-        pid_incr_count(OUTERL4_UDP);
+        cnt_inc(OUTERL4_UDP);
 	}
 	else
 	{
 		/* convert src and dest ports to host byte order */
 	  	hytag->inner_srcport= ntohs(udphdr->src);
 	  	hytag->inner_dstport= ntohs(udphdr->dest);	
-        pid_incr_count(INNERL4_UDP);
+        cnt_inc(INNERL4_UDP);
 	}
 
 

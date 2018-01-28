@@ -1,5 +1,5 @@
-#ifndef __PID_H_
-#define __PID_H_
+#ifndef __PID_H__
+#define __PID_H__
 
 #include <stdio.h>
 #include <string.h>
@@ -10,6 +10,7 @@
 #include "bts_debug.h"
 
 #include "luna_types.h"
+
 
 
 #define SIZEOF_ETH_HDR 	(14)
@@ -78,9 +79,6 @@ do{\
 #define HEADER_OUTER  0
 #define HEADER_INNER  1
 
-
-
-//#define DEBUG_ENABLE
 #ifdef  DEBUG_ENABLE
 
 #define DEBUG_PRINTF(format, args...) printf(format, ##args) 
@@ -95,11 +93,10 @@ do{\
 #include "pid_innerIp4.h"
 #include "pid_gre.h"
 #include "pid_http.h"
-//#include "luna_stat.h"
 
-//berr luna_pid_dpdk(struct rte_mbuf *m);
+
 berr luna_pid(hytag_t *hytag);
 
 
-#endif
+#endif /* __PID_H__ */
 

@@ -11,7 +11,7 @@ berr pid_innerip(struct pbuf *p,  hytag_t * hytag)
 	if(check_pbuf_len(p, IP_HD_LEN))
 	{
         
-		pid_incr_count(INNERL3_HD);//drop packet and incr counter, then return;
+		cnt_inc(INNERL3_HD);//drop packet and incr counter, then return;
 		//PRINTF_PKT(p);
         //sleep(100);
 		BRET(E_EXCEED);
@@ -25,12 +25,12 @@ berr pid_innerip(struct pbuf *p,  hytag_t * hytag)
         case 4:
             break;
         case 6:
-            pid_incr_count(INNERL3_IPV6);
+            cnt_inc(INNERL3_IPV6);
             //goto ipv6
             BRET(E_COMPARE);
             break;
         default:
-            pid_incr_count(INNERL3_NOIP);
+            cnt_inc(INNERL3_NOIP);
             BRET(E_COMPARE);
             break;
     }
@@ -44,7 +44,7 @@ berr pid_innerip(struct pbuf *p,  hytag_t * hytag)
 	/* obtain ip length in bytes */
   	//iphdr_len = ntohs(IPH_LEN(iphdr));
 
-	pid_incr_count(INNERL3_IPV4);
+	cnt_inc(INNERL3_IPV4);
 	hytag->inner_dstip4 = ntohl(iphdr->dest);
 	hytag->inner_srcip4 = ntohl(iphdr->src);
 

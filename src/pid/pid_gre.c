@@ -11,7 +11,7 @@ berr pid_gtpu(struct pbuf *p, hytag_t *hytag)
     
 	if(check_pbuf_len(p, GRE_HEAD_LEN))
 	{
-		pid_incr_count(GTP_U_HD);//drop packet and incr counter, then return;
+		cnt_inc(GTP_U_HD);//drop packet and incr counter, then return;
 		BRET(E_EXCEED);
 	}
 
@@ -21,12 +21,12 @@ berr pid_gtpu(struct pbuf *p, hytag_t *hytag)
 	if(GRE_VERSION(grehdr) != GREV1 
 		|| GRE_PRO(grehdr) != GRE_GTP)
 	{
-		pid_incr_count(GTP_U_HD);
+		cnt_inc(GTP_U_HD);
 		BRET(E_FAIL);
 	}
 	hytag->teid = ntohl(grehdr->teid);
 
-    pid_incr_count(GTP_U);
+    cnt_inc(GTP_U);
     
 	if(GRE_NEXT_HDR_FG(grehdr)
 		||GRE_SEQ_NUM_FG(grehdr)
@@ -61,7 +61,7 @@ berr pid_gtpu(struct pbuf *p, hytag_t *hytag)
         case GTP_MSG_ECHO_REQ:
         case GTP_MSG_ECHO_RSP:    
         default:
-            pid_incr_count(GTP_U_NOPAYLOAD);
+            cnt_inc(GTP_U_NOPAYLOAD);
             break;
     }    
     return E_SUCCESS;
@@ -84,7 +84,7 @@ berr pid_gtpv2c(struct pbuf *p, hytag_t *hytag __attribute__ ((unused)))
 
 
     UPDATE_PBUF_OFFSET(p, len);
-    pid_incr_count(GTPV2_C);
+    cnt_inc(GTPV2_C);
     
     return E_SUCCESS;
 }

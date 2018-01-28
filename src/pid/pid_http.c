@@ -31,7 +31,7 @@ static inline int pid_http_request_method(uint8_t *p ,  uint8_t *method, uint16_
 	{
 		if (i + 1 > MAX_METHOD_LEN)
 		{
-			pid_incr_count(HTTP_METHOD_EXCEED);
+			cnt_inc(HTTP_METHOD_EXCEED);
 			return FALSE;
 		}
 		else
@@ -55,7 +55,7 @@ static inline berr pid_http_request_url(uint8_t *p ,  uint8_t *url, uint16_t *le
 	{
 		if (i + 1 > URL_MAX_LEN)
 		{
-			//pid_incr_count(HTTP_URL_EXCEED);
+			//cnt_inc(HTTP_URL_EXCEED);
 			//BRET(E_FAIL);
 			return E_FAIL;
 		}
@@ -79,7 +79,7 @@ static inline berr pid_http_request_version_skip(uint8_t *p, uint16_t *len)
 	{
 		if (i + 1 > STRING_HTTP_VERSION_MAX)
 		{
-			//pid_incr_count(HTTP_URL_EXCEED);
+			//cnt_inc(HTTP_URL_EXCEED);
 			//BRET(E_FAIL);
 			return E_FAIL;
 		}
@@ -105,7 +105,7 @@ static inline berr pid_http_request_host(uint8_t *p ,  uint8_t *host, uint16_t *
 	{
 		if (i + 1 > MAX_HOST_LEN)
 		{
-			//pid_incr_count(HTTP_URL_EXCEED);
+			//cnt_inc(HTTP_URL_EXCEED);
 			BRET(E_FAIL);
 		}
 		else
@@ -150,12 +150,12 @@ berr pid_http_up(struct pbuf *p ,  hytag_t * hytag )
 	if ((method_len != STRING_HTTP_GET_LEN ) ||
 		(memcmp(STRING_HTTP_GET, method_http, STRING_HTTP_GET_LEN)))
 	{
-		pid_incr_count(APP_HTTP_OTHER);
+		cnt_inc(APP_HTTP_OTHER);
 		return E_SUCCESS;
 	}
 	else
 	{
-		pid_incr_count(APP_HTTP_GET);
+		cnt_inc(APP_HTTP_GET);
 	}
 
 	len = method_len + 1;
@@ -410,7 +410,7 @@ static berr pid_url(char *str, int len, luna_url_t *nu)
     result = http_parser_parse_url(str, len, 0, &u);
 
     if (result != 0) {
-        pid_incr_count(APP_HTTP_PARSE_ERR);
+        cnt_inc(APP_HTTP_PARSE_ERR);
         return E_FAIL; 
     }
 
@@ -455,7 +455,7 @@ berr pid_http_up(struct pbuf *p ,  hytag_t * hytag )
     PBUF_CUR_FORMAT(uint8_t *, http_p, p);
     if( l5_len <= 0  || l5_len >= PACKET_MTU)
     {
-        pid_incr_count(APP_HTTP_OTHER);
+        cnt_inc(APP_HTTP_OTHER);
 	    return E_SUCCESS;
     }	 	
     memcpy(l5_ptr, http_p, l5_len);
@@ -467,10 +467,10 @@ berr pid_http_up(struct pbuf *p ,  hytag_t * hytag )
         method = strsep(&line, " ");
         if (NULL == method  || strncmp(STRING_HTTP_GET, method, STRING_HTTP_GET_LEN))
         {
-        	pid_incr_count(APP_HTTP_OTHER);
+        	cnt_inc(APP_HTTP_OTHER);
         	return E_SUCCESS;
         }
-        pid_incr_count(APP_HTTP_GET);
+        cnt_inc(APP_HTTP_GET);
         hytag->app_type = APP_TYPE_HTTP_GET_OR_POST;
 
         uri = strsep(&line, " ");
