@@ -13,6 +13,8 @@
 #include "itf_cmd.h"
 #include "itf_stat.h"
 
+#include "dpf.h"
+
 DEFUN(itf_rxtx, 
       itf_rxtx_cmd,
       "interface bussiness (add|remove|test) IFNAME", "interface setting\nenable or disable\nrx or tx\n")
@@ -87,7 +89,7 @@ DEFUN(itf_rxtx,
 
         luna_data_process_module(&hytag);
         vty_out(vty, "Success to test %s", VTY_NEWLINE);
-        return;
+        return 0;
               
     }
     return 0;
