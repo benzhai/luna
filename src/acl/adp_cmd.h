@@ -1,11 +1,10 @@
-#ifndef __ADP_CMD_H
-#define __ADP_CMD_H
-
+#ifndef __ADP_CMD_H__
+#define __ADP_CMD_H__
 
 #include "vty.h"
-void cmdline_adp_init(void);
 
+void adp_cmdline_init(void);
 
 void adp_cmd_config_write(struct vty *vty);
 
-#endif
+#endif /* __ADP_CMD_H__ */

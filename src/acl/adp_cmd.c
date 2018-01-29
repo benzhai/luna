@@ -33,9 +33,9 @@ DEFUN(adp_interval_get,
 
 	adp_get_interval(&interval);
 
-	adp_can_push_count = CNT_GET(ADP_ALL_CAN_PUSH); 
-	adp_push_tx_success = CNT_GET(ADP_PUSH_TX_SUCCESS);
-	adp_push_ack_success = CNT_GET(ADP_PUSH_ACK_SUCCESS);
+	adp_can_push_count = CNT_FETCH(ADP_ALL_CAN_PUSH); 
+	adp_push_tx_success = CNT_FETCH(ADP_PUSH_TX_SUCCESS);
+	adp_push_ack_success = CNT_FETCH(ADP_PUSH_ACK_SUCCESS);
 
     boottime = adp_get_start_time();
 
@@ -359,7 +359,7 @@ void adp_cmd_config_write(struct vty *vty)
  * vsr module cmdline register and init 
  *
  * */
-void cmdline_adp_init(void)
+void adp_cmdline_init(void)
 {
     install_element(CMD_NODE, &adp_interval_cmd);
     install_element(CMD_NODE, &adp_interval_get_cmd);

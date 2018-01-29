@@ -237,7 +237,7 @@ void adt_cmd_config_write(struct vty *vty)
  * vsr module cmdline register and init 
  *
  * */
-void cmdline_adt_init(void)
+void adt_cmdline_init(void)
 {
     install_element(CMD_NODE, &adt_load_cmd);
     install_element(CMD_NODE, &adt_show_cmd);

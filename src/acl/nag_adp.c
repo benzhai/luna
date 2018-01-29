@@ -226,7 +226,7 @@ berr luna_adp(hytag_t *hytag)
     }
 
 	CNT_INC(ADP_ALL_CAN_PUSH);
-    if( CNT_GET(ADP_ALL_CAN_PUSH)% g_adp_interval != 0)
+    if( CNT_FETCH(ADP_ALL_CAN_PUSH)% g_adp_interval != 0)
     {
         CNT_INC(ADP_DROP_ADP_INTERVAL);
         return E_SUCCESS;

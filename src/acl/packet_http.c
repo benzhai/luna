@@ -32,9 +32,11 @@
 // HTTP_USER_AGENT HTTP_CRLF
 // HTTP_CRLF
 //*****************************************************************************
+#include <stdlib.h>
+#include <string.h>
+
 #include "boots.h"
 #include "packet_http.h"
-#include<string.h>
 #include "bts_debug.h"
 #include  "gzip.h"
 //#define DEBUG
@@ -420,11 +422,12 @@ berr adt_get_send(uint8_t *send)
 
 berr adt_send_set(adt_send_em send)
 {
-    if ( send == ADT_SEND_NULL )
+    if (send == ADT_SEND_NULL)
     {
         return E_PARAM;
     }
-    send_mode = (uint8_t)send;
+    send_mode = (uint8_t) send;
+
     return E_SUCCESS;
 }
 
@@ -494,7 +497,7 @@ berr ads_gzip_and_fill_content( char *buf, uint16_t *out_len, hytag_t *hytag)
     out = buf;
     outlen = len;
     /* gzip */
-    rv  = gzcompress(in, (uLong)len, out, &outlen);
+    rv  = gzcompress((Bytef  *) in, (uLong)len, (Bytef  *) out, &outlen);
     if (rv < 0)
     {
         free(in);
@@ -656,25 +659,21 @@ berr ads_http_302_fill(char *buf, hytag_t *hytag, char *url)
 berr ads_http_ok_head_fill(char *buf, hytag_t *hytag)
 {
     uint16_t len = 0;
-    uint16_t content_len = 0;
-    char content_buff[10] = {0};
-    int  clen =0 ;
-    
+
     if ( NULL == buf || NULL == hytag )
     {
         BRET(E_PARAM);
     }
 
     /* get content length */
-    content_len = http_content_len_get(hytag);
-    hytag->content_len = content_len;
+    hytag->content_len = http_content_len_get(hytag);
 #if 1
     //uint64_t pre, cur;
     //pre = rte_rdtsc();
  
     len += snprintf(buf+len, 2048-len, "%s%s%s%d%s%s%s", 
         http_head_response1, http_head_response2, 
-        http_head_response3, content_len, http_head_response5,
+        http_head_response3, hytag->content_len, http_head_response5,
         http_head_response6, http_head_response7);
     //cur = rte_rdtsc();
 
@@ -716,8 +715,7 @@ berr ads_http_ok_head_fill(char *buf, hytag_t *hytag)
 berr ads_http_content_fill(char *buf, hytag_t *hytag)
 {
     uint16_t len = 0;
-    uint16_t content_len = 0;
-    char *content_buff[10] = {0};
+
     char *head = http_body[hytag->template].head;
     char *url = hytag->url;
     char *tail = http_body[hytag->template].tail;

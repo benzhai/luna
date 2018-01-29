@@ -4,7 +4,7 @@
 
 #include "luna_types.h"
 #include "luna_util.h"
-#include "luna_acl.h"
+#include "acl.h"
 
 #include "packet.h"
 #include "itf.h"

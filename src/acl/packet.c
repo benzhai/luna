@@ -20,12 +20,13 @@
 #include <errno.h>
 #include <sys/queue.h>
 #include <sys/time.h>
-#include <rte_ether.h>
+
 #include "boots.h"
 #include "pid.h"
-#include "rte_tcp.h"
-#include "rte_ip.h"
 #include "packet.h"
+#include "packet_http.h"
+
+#include "rte.h"
 
 //#define DEBUG
 #ifdef  DEBUG   
@@ -427,7 +428,7 @@ redirect_302_response_generator(unsigned char *ptr, hytag_t *hytag, char *url)
         ptr[ptr_len-1] = 0x00;
 
         /*skip vlan*/
-        eth_header = buf;
+        eth_header = (struct eth_hdr *) buf;
         type = eth_header->ethertype;
         buf_len += 14; 
 

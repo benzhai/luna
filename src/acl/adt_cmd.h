@@ -10,7 +10,10 @@
 #ifndef __ADT_CMD_H__
 #define __ADT_CMD_H__
 
-void adt_cmd_config_write(struct vty *vty);
-void cmdline_adt_init(void);
+#include "vty.h"
 
-#endif 
+void adt_cmdline_init(void);
+
+void adt_cmd_config_write(struct vty *vty);
+
+#endif /* __ADT_CMD_H__ */
