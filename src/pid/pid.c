@@ -9,5 +9,10 @@ berr luna_pid(hytag_t *hytag)
 	return pid_ethernet(p, hytag);
 }
 
+void pid_init(void)
+{
+    return ;
+}
+
 /* End of file */
 

@@ -42,5 +42,6 @@ typedef struct {
 mod_t mod_array[MOD_MAX];
 mod_t* mod_lookup(char *name);
 berr mod_modify(char *name, bswt enable, bswt debug);
+int mod_is_enable(bmod mod);
 
 #endif /* End of __BTS_MOD_H__ */

@@ -1,21 +1,11 @@
 .PHONY:all
 
-
-
-
-all:pcre-8.13 libpcre.a
+all: libpcre.a
 
 libpcre.a:
-	ln -s  pcre-8.13/.libs/libpcre.a
-
-pcre-8.13:
-	tar xvf pcre-8.13.tar.gz>>/dev/null
-	ln -s pcre-8.13 pcre
-	cd pcre && ./configure >>/dev/null
-	cd pcre &&  make >>/dev/null
-
+	cd pcre && ./configure >> /dev/null
+	mkdir pcre/.libs
+	cd pcre &&  make >> /dev/null
 
 clean:
-	rm -rf  pcre-8.13
-	rm -rf  libpcre.a
-	rm -rf  pcre
+	cd pcre &&  make clean >> /dev/null

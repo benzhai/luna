@@ -45,12 +45,12 @@
 #include <errno.h>
 #include <getopt.h>
 
-#include "cmd.h"
 #include "dpf.h"
 #include "itf.h"
 #include "pid.h"
 #include "fct.h"
 #include "acl.h"
+#include "cmd.h"
 
 #include "itf_cmd.h"
 #include "pid_cmd.h"
@@ -61,9 +61,7 @@ char *interface_str = NULL; /*for eth name*/
 
 int
 main(int argc, char **argv)
-{
-    berr rv;
-    
+{   
     pid_init();
     fct_init();
     acl_init();
@@ -74,6 +72,8 @@ main(int argc, char **argv)
     itf_raw_socket_init(interface_str);
 
     cmdline (0, NULL);
+
+    return 0;
 }
 
 void custom_cmdline_init(void)

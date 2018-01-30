@@ -3,6 +3,17 @@
 #include "boots.h"
 #include "bts_debug.h"
 
+
+dopt_t dopt_array[OPT_MAX] = {
+#ifdef MOD_OPT_ARRAY
+    MOD_OPT_ARRAY
+#endif
+#ifdef OPT_ARRAY_CUSTOM
+    OPT_ARRAY_CUSTOM
+#endif
+    OPT_DEF(OPT_DEMO, "dopt demo of luna")
+} ;
+
 int dopt_is_enable(dopte dop)
 {
     return dop < OPT_MAX ? dopt_array[dop].enable : OFF;

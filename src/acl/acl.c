@@ -7,7 +7,10 @@
 #include "acl.h"
 
 #include "packet.h"
+#include "packet_http.h"
 #include "itf.h"
+
+#include "nag_adp.h"
 
 berr luna_acl_redir(hytag_t *hytag)
 {
@@ -89,4 +92,18 @@ berr luna_acl(hytag_t *hytag)
     return E_SUCCESS;
 }
 
+
+void acl_init(void)
+{
+    berr rv;
+    
+    adp_dp_init();
+
+    rv = ads_template_init();
+
+    if (rv)
+    {
+        printf("%s %d ads_template_init fail, rv(%d)\n", __func__, __LINE__, rv);
+    }
+}
 /* End of file */

@@ -12,7 +12,6 @@ CFLAGS  += -DMAKELIB -g -Wall \
 	-I$(SRCDIR)/acl \
 	-I$(SRCDIR)/main
 
-
 all: $(PMK) $(LIB) 
 %.c: 
 

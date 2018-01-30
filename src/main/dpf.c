@@ -2,12 +2,15 @@
 
 #include "bts_custom.h"
 #include "dbg_tagmon.h"
+#include "bts_mod.h"
 
 #include "itf.h"
 #include "dpf.h"
 #include "pid.h"
 #include "fct.h"
 #include "acl.h"
+
+#include "itf_stat.h"
 
 
 #define MOD_IS_TURN_ON(mod)  (mod_is_enable(mod) == ON)

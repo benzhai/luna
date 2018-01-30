@@ -97,6 +97,7 @@ do{\
 
 berr luna_pid(hytag_t *hytag);
 
+void pid_init(void);
 
 #endif /* __PID_H__ */
 

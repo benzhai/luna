@@ -5,4 +5,6 @@ berr luna_fct(hytag_t *hytag);
 
 void cmdline_fct_init(void);
 
+void fct_init(void);
+
 #endif /* __NAGA_FCT_H__ */

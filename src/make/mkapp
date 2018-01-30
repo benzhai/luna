@@ -1,6 +1,16 @@
-include $(MKDIR)/make.var
+include $(MKDIR)/mkvar
 
-CFLAGS  += -DMAKEAPP -g -Wall -I. -I$(SRCDIR)/../boots -I$(SRCDIR)/include -I$(SRCDIR)/libzebra
+CFLAGS  += -DMAKEAPP -g -Wall -I. \
+	-I$(SRCDIR)/libs/boots \
+	-I$(SRCDIR)/libs/pub \
+	-I$(SRCDIR)/libs/zebra \
+	-I$(SRCDIR)/libs/cmdline \
+	-I$(SRCDIR)/itf \
+	-I$(SRCDIR)/pid \
+	-I$(SRCDIR)/fct \
+	-I$(SRCDIR)/acl \
+	-I$(SRCDIR)/main
+
 LDFLAGS += 
 
 all: $(PROG)

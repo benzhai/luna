@@ -2,6 +2,11 @@
 #include "bts_debug.h"
 #include "bts_util.h"
 
+cnt_t bts_cnt_array[CNT_MAX] = {
+    CNT_DEF_CUSTOM
+    CNT_DEF(CNT_DEMO)
+};
+
 berr cnt_add(cnte idx, uint64_t value)
 {
     cnt_t *cnt = NULL;
@@ -108,6 +113,18 @@ berr cnt_get(cnte idx, uint32_t number, cnt_t *vals, uint32_t *total)
     }
 
     BRET(E_SUCCESS);
+}
+
+
+uint64_t cnt_fetch(cnte idx)
+{
+    cnt_t vals;
+    uint32_t total = 0;
+
+    if(cnt_get(idx, 1, &vals, &total) != E_SUCCESS)
+        return 0;
+
+    return vals.val;
 }
 
 berr cnt_clear(cnte idx, uint32_t number, uint32_t *total)

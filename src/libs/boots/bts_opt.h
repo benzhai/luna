@@ -25,15 +25,7 @@ typedef struct {
     char *desc;
 } dopt_t;
 
-dopt_t dopt_array[OPT_MAX] = {
-#ifdef MOD_OPT_ARRAY
-    MOD_OPT_ARRAY
-#endif
-#ifdef OPT_ARRAY_CUSTOM
-    OPT_ARRAY_CUSTOM
-#endif
-    OPT_DEF(OPT_DEMO, "dopt demo of luna")
-} ;
+extern dopt_t dopt_array[OPT_MAX];
 
 int dopt_is_enable(dopte dop);
 dopt_t* dopt_lookup(char *name);

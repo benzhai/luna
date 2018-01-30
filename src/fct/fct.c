@@ -7,6 +7,9 @@
 #include "url.h"
 #include "mask.h"
 
+#include "vsr_dp.h"
+#include "net.h"
+
 berr luna_fct(hytag_t *hytag)
 {
     berr rv = E_MAX;
@@ -35,6 +38,12 @@ berr luna_fct(hytag_t *hytag)
     }
 
     return E_SUCCESS;
+}
+
+void fct_init(void)
+{
+    vsr_dp_init();
+    netseg_init();
 }
 
 /* End of file */

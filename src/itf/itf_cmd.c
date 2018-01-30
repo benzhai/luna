@@ -354,7 +354,7 @@ extern struct list_head	handle_head;
  * vsr module cmdline register and init 
  *
  * */
-void cmdline_itf_init(void)
+void itf_cmdline_init(void)
 {
     install_element(CMD_NODE, &itf_rxtx_cmd);
     install_element(CMD_NODE, &itf_show_stat_cmd);

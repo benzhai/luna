@@ -1,2 +1,2 @@
-subdirs = libs pub itf pid fct acl main tools
+subdirs = libs itf pid fct acl main
 include $(MKDIR)/mkdir

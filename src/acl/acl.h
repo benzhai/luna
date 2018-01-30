@@ -3,4 +3,6 @@
 
 berr luna_acl(hytag_t *hytag);
 
+void acl_init(void);
+
 #endif /* __NAGA_ACL_H__ */
