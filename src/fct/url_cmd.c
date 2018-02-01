@@ -19,8 +19,7 @@
 
 DEFUN(ori_url_add,
       ori_url_add_cmd,
-      "ori url add <0-63> EXPR ACT",
-      ORL_EXPR
+      "url add <0-63> EXPR ACT",
       URL_EXPR
       ADD_EXPR
       URL_INDEX_EXPR
@@ -82,8 +81,7 @@ DEFUN(ori_url_add,
 
 ALIAS (ori_url_add,
        ori_url_add_param_cmd,
-       "ori url add <0-63> EXPR ACT PARAM",
-       ORL_EXPR
+       "url add <0-63> EXPR ACT PARAM",
        URL_EXPR
        ADD_EXPR
        URL_INDEX_EXPR
@@ -93,8 +91,7 @@ ALIAS (ori_url_add,
 
 ALIAS (ori_url_add,
        ori_url_add_param_rate_cmd,
-       "ori url add <0-63> EXPR ACT PARAM <1-100>",
-       ORL_EXPR
+       "url add <0-63> EXPR ACT PARAM <1-100>",
        URL_EXPR
        ADD_EXPR
        URL_INDEX_EXPR
@@ -105,8 +102,7 @@ ALIAS (ori_url_add,
 
 DEFUN(ori_url_del,
       ori_url_del_cmd,
-      "ori url del <0-63>",
-      ORL_EXPR
+      "url del <0-63>",
       URL_EXPR
       DEL_EXPR
       URL_INDEX_EXPR)
@@ -121,8 +117,7 @@ DEFUN(ori_url_del,
 
 DEFUN(ori_url_del_all,
       ori_url_del_all_cmd,
-      "ori url del all",
-      ORL_EXPR
+      "url del all",
       URL_EXPR
       DEL_EXPR
       URL_INDEX_EXPR)
@@ -141,7 +136,7 @@ DEFUN(ori_url_del_all,
 
 DEFUN(show_ori_url_all,
       show_ori_url_all_cmd,
-      "show ori url all",
+      "show url all",
       URL_EXPR)
 {
 
@@ -172,33 +167,9 @@ DEFUN(show_ori_url_all,
     return 0;
 }
 
-void ori_url_cmd_config_write(struct vty *vty)
-{
-
-    struct pcre_s *pcreptr = NULL;
-    int i;
-
-    char acl_str[LUNA_ACL_STR_SZ];
-    memset(acl_str, 0, LUNA_ACL_STR_SZ);
-    for(i=0; i < MAX_URL_RULE; i++)
-    {
-        pcreptr = ori_url_rule_get(i);
-        if(!pcreptr)
-            continue;
-        if(pcreptr->used)
-        {
-            luna_acl_string(&pcreptr->acl, acl_str);
-
-            vty_out(vty, "ori url add %d %s %s %s", pcreptr->id, pcreptr->cli_pattern, acl_str,  VTY_NEWLINE);    
-        } 
-    }
-    return ;
-}
-
-
 DEFUN(ref_url_add,
       ref_url_add_cmd,
-      "ref url add <0-63> EXPR ACT",
+      "ref add <0-63> EXPR ACT",
       URL_EXPR)
 {
 
@@ -256,17 +227,17 @@ DEFUN(ref_url_add,
 
 ALIAS (ref_url_add,
        ref_url_add_param_cmd,
-       "ref url add <0-63> EXPR ACT PARAM",
+       "ref add <0-63> EXPR ACT PARAM",
        URL_EXPR)
 
 ALIAS (ref_url_add,
        ref_url_add_param_rate_cmd,
-       "ref url add <0-63> EXPR ACT PARAM <1-100>",
+       "ref add <0-63> EXPR ACT PARAM <1-100>",
        URL_EXPR)
 
 DEFUN(ref_url_del,
       ref_url_del_cmd,
-      "ref url del <0-63>",
+      "ref del <0-63>",
       URL_EXPR)
 {
 
@@ -279,7 +250,7 @@ DEFUN(ref_url_del,
 
 DEFUN(ref_url_del_all,
       ref_url_del_all_cmd,
-      "ref url del all",
+      "ref del all",
       URL_EXPR)
 {
 
@@ -296,7 +267,7 @@ DEFUN(ref_url_del_all,
 
 DEFUN(show_ref_url_all,
       show_ref_url_all_cmd,
-      "show ref url all",
+      "show ref all",
       URL_EXPR)
 {
 
@@ -335,17 +306,28 @@ void url_cmd_config_write(struct vty *vty)
     int i;
 
     char acl_str[LUNA_ACL_STR_SZ];
-    memset(acl_str, 0, LUNA_ACL_STR_SZ);
+    for(i=0; i < MAX_URL_RULE; i++)
+    {
+        pcreptr = ori_url_rule_get(i);
+        
+        if((pcreptr != NULL) && (pcreptr->used))
+        {
+            memset(acl_str, 0, LUNA_ACL_STR_SZ);
+            luna_acl_string(&pcreptr->acl, acl_str);
+
+            vty_out(vty, "url add %d %s %s %s", pcreptr->id, pcreptr->cli_pattern, acl_str,  VTY_NEWLINE);    
+        } 
+    }
+
     for(i=0; i < MAX_URL_RULE; i++)
     {
         pcreptr = ref_url_rule_get(i);
-        if(!pcreptr)
-            continue;
-        if(pcreptr->used)
+        if((pcreptr != NULL) && (pcreptr->used))
         {
+            memset(acl_str, 0, LUNA_ACL_STR_SZ);
             luna_acl_string(&pcreptr->acl, acl_str);
 
-            vty_out(vty, "ref url add %d %s %s %s", pcreptr->id, pcreptr->cli_pattern, acl_str,  VTY_NEWLINE);    
+            vty_out(vty, "ref add %d %s %s %s", pcreptr->id, pcreptr->cli_pattern, acl_str,  VTY_NEWLINE);    
         } 
     }
     return ;

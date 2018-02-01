@@ -241,8 +241,8 @@ int cmdline (int argc, char **argv)
     vty_serv_sock (vty_addr, vty_port, "/tmp/test_zebra");
 
     /* Print banner. */
-    zlog_notice ("Zebra %s starting: vty@%d", QUAGGA_VERSION, vty_port);
-    printf ("Zebra %s starting: vty@%d", QUAGGA_VERSION, vty_port);
+    zlog_notice ("Luna %s starting: vty@%d", QUAGGA_VERSION, vty_port);
+    printf ("Luna %s starting: vty@%d", QUAGGA_VERSION, vty_port);
     fflush(0);
     /* add by Samliu*/
     //thread_add_timer(zebrad.master, update_log_file_timer, NULL, 5);

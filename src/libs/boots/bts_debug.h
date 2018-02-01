@@ -4,10 +4,11 @@
 #include "bts_cnt.h"
 #include "bts_opt.h"
 #include "bts_log.h"
+#include "bts_mod.h"
 
 #define BTS_DEBUG_DUMP(_mod, _opt, _fmt, _args...) { \
     if ((_mod < MOD_MAX) || (_opt < OPT_MAX)) { \
-        if (dopt_array[_opt].enable && dopt_array[_mod].enable) { \
+        if (dopt_array[_opt].enable && mod_array[_mod].debug) { \
             printf("[%s.%s] %s.%d:" _fmt, #_mod, #_opt, __func__, __LINE__, ##_args); \
         } \
     } \

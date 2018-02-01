@@ -22,12 +22,14 @@
         berr _ec = _func(_tag); \
         if (_ec == E_SUCCESS) \
         { \
-            /*DBG_INFO(MOD_DPF, "%s ...... PASS.\n", #_func);*/ \
+           DBG_INFO(MOD_DPF, "%s ...... PASS.\n", #_func); \
         } else { \
-           /* DBG_ERR(MOD_DPF, "%s  ...... FAIL!(%s)\n", #_func, berr_msg(_ec));*/ \
+           DBG_ERR(MOD_DPF, "%s  ...... FAIL!(%s)\n", #_func, berr_msg(_ec)); \
         } \
         HYTAG_DUMP(_tag); \
-    } \
+    } else { \
+		DBG_INFO(MOD_DPF, "%s is turn off!\n", #_mod); \
+	} \
 }
 
 

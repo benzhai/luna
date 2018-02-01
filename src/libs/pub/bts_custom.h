@@ -12,7 +12,7 @@
     MOD_ITF, \
     MOD_PID, \
     MOD_FCT, \
-    MOD_ACL
+    MOD_ACL,
 
 #define MOD_ARRAY_CUSTOM \
     {MOD_DPF, BAS, OFF, OFF, "DPF", "Data process flow"}, \

@@ -25,8 +25,10 @@
       OPT_DEF(OPT_CALLSTACK, "dump call stack"),
 
 typedef enum {
+#ifdef MOD_CUSTOM
+    MOD_CUSTOM
+#endif
     MOD_DBG,
-    MOD_CUSTOM,
     MOD_MAX
 } bmod;
 

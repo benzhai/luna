@@ -19,17 +19,12 @@ berr luna_acl_redir(hytag_t *hytag)
     unsigned char buffer[2048]; 
     char url[2048];
 
+    CNT_INC(ACL_REDIR_PKTS);
+
     if (NULL == hytag) 
     {
         return E_PARAM; 
     }
-
-    if(ACT_REDIR != (hytag->acl.actions & ACT_REDIR))
-    {
-        return E_SUCCESS;
-    }
-
-    CNT_INC(ACL_REDIR_PKTS);
     
     /* */
     if( APP_TYPE_HTTP_GET_OR_POST != hytag->app_type)
@@ -74,8 +69,8 @@ berr luna_acl_redir(hytag_t *hytag)
   
 
    
-   CNT_INC(ACL_REDIR_TX_SUCCESS);
-   return E_SUCCESS;
+    CNT_INC(ACL_REDIR_TX_SUCCESS);
+    return E_SUCCESS;
 }
 
 
@@ -83,10 +78,15 @@ berr luna_acl(hytag_t *hytag)
 {
     int rv = E_MAX;
 
-    rv = luna_acl_redir(hytag);
+	CNT_INC(ACL_PKTS);
 
-    if (rv != E_SUCCESS) {
-        printf("%s.%d: rv = %s\n", __func__, __LINE__, berr_msg(rv));
+    if(ACT_REDIR == (hytag->acl.actions & ACT_REDIR))
+    {
+        rv = luna_acl_redir(hytag);
+
+        if (rv != E_SUCCESS) {
+            printf("%s.%d: rv = %s\n", __func__, __LINE__, berr_msg(rv));
+        }
     }
 
     return E_SUCCESS;

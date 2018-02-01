@@ -82,10 +82,10 @@ static int cmd_show_stat(struct vty *vty, const char *str) {
 				continue;
 			}
 		}
-		if (cnt_array[i].val) {
+		//if (cnt_array[i].val) {
 			vty_out(vty, "%-40s: %lld%s", cnt_array[i].name,
 					(ULL) cnt_array[i].val, VTY_NEWLINE);
-		}
+		//}
 
 	}
 
@@ -94,16 +94,23 @@ static int cmd_show_stat(struct vty *vty, const char *str) {
 
 DEFUN(show_stat,
 		show_stat_cmd,
-		"show stat [STR]",
+		"show stat STR",
 		SHOW_STR
 		STAT_STR
 		MATCH_STR_STR
 )
 {
-	if (argc == 1)
-		return cmd_show_stat(vty, argv[0]);
-	else
-		return cmd_show_stat(vty, NULL);
+    return cmd_show_stat(vty, argv[0]);
+}
+
+DEFUN(show_stat_all,
+		show_stat_all_cmd,
+		"show stat",
+		SHOW_STR
+		STAT_STR
+)
+{
+    return cmd_show_stat(vty, NULL);
 }
 
 static int cmd_config_stat_log_file(struct vty *vty, const char *str) {
@@ -160,13 +167,23 @@ static int cmd_show_module(struct vty *vty, const char *name) {
 
 DEFUN(show_module,
 		show_module_cmd,
-		"show module [NAME]",
+		"show module NAME",
 		SHOW_STR
 		MODULE_STR
 		MODULE_NAME_STR
 )
 {
 	return cmd_show_module(vty, argv[0]);
+}
+
+DEFUN(show_module_all,
+		show_module_all_cmd,
+		"show module",
+		SHOW_STR
+		MODULE_STR
+)
+{
+	return cmd_show_module(vty, NULL);
 }
 
 static int cmd_module(struct vty *vty, const char *name,
@@ -220,13 +237,13 @@ void vty_dopt_dump(struct vty *vty, dopt_t *dopt) {
 
 	bswt_string(&dopt->enable, enable_str);
 
-	vty_out(vty, "(%d)%-10s    %-3s    %s%s", dopt->idx, dopt->name,
+	vty_out(vty, "  %-16s  %-3s    %s%s", dopt->name,
 			enable_str, dopt->desc, VTY_NEWLINE);
 }
 
 static int cmd_show_dopt(struct vty *vty, const char *name) {
 	dopt_t *dopt = NULL;
-	if (NULL == name) {
+	if ((NULL == name) || !strcmp("all", name)) {
 		int i;
 		for (i = 0; i < OPT_MAX; i++) {
 			dopt = &dopt_array[i];
@@ -246,7 +263,7 @@ static int cmd_show_dopt(struct vty *vty, const char *name) {
 
 DEFUN(show_debug_option,
 		show_debug_option_cmd,
-		"show debug option [NAME]",
+		"show debug option NAME",
 		SHOW_STR
 		BTS_DEBUG_STR
 		DEBUG_OPTION_STR
@@ -254,6 +271,17 @@ DEFUN(show_debug_option,
 )
 {
 	return cmd_show_dopt(vty, argv[0]);
+}
+
+DEFUN(show_debug_option_all,
+		show_debug_option_all_cmd,
+		"show debug option",
+		SHOW_STR
+		BTS_DEBUG_STR
+		DEBUG_OPTION_STR
+)
+{
+	return cmd_show_dopt(vty, NULL);
 }
 
 static int cmd_dopt(struct vty *vty, const char *name, const char *enable_str) {
@@ -352,16 +380,19 @@ void bts_cmd_config_write(struct vty *vty) {
  * bts_cnt  module cmdline register and init 
  *
  * */
-void cmdline_bts_init(void) {
+void bts_cmdline_init(void) {
 	install_element(CMD_NODE, &show_stat_cmd);
+	install_element(CMD_NODE, &show_stat_all_cmd);
 	install_element(CMD_NODE, &clear_stat_cmd);
 	install_element(CMD_NODE, &config_stat_log_file_cmd);
 
 	install_element(CMD_NODE, &module_cmd);
 	install_element(CMD_NODE, &show_module_cmd);
+	install_element(CMD_NODE, &show_module_all_cmd);
 
 	install_element(CMD_NODE, &debug_option_cmd);
 	install_element(CMD_NODE, &show_debug_option_cmd);
+	install_element(CMD_NODE, &show_debug_option_all_cmd);
 
 	return;
 }

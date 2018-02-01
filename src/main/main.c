@@ -52,6 +52,7 @@
 #include "acl.h"
 #include "cmd.h"
 
+#include "bts_cmd.h"
 #include "itf_cmd.h"
 #include "pid_cmd.h"
 #include "fct_cmd.h"
@@ -66,8 +67,8 @@ main(int argc, char **argv)
     fct_init();
     acl_init();
 
-    if(argv[2] != NULL)
-        interface_str = strdup(argv[2]);
+    if(argv[1] != NULL)
+        interface_str = strdup(argv[1]);
 
     itf_raw_socket_init(interface_str);
 
@@ -78,6 +79,7 @@ main(int argc, char **argv)
 
 void custom_cmdline_init(void)
 {
+    bts_cmdline_init();
     itf_cmdline_init();
     pid_cmdline_init();
     fct_cmdline_init();
@@ -86,6 +88,7 @@ void custom_cmdline_init(void)
 
 void custom_cmd_config_write(struct vty *vty)
 {
+    bts_cmd_config_write(vty);
     itf_cmd_config_write(vty);
     pid_cmd_config_write(vty);
     fct_cmd_config_write(vty);

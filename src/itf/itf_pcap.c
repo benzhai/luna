@@ -27,7 +27,8 @@ static struct  sockaddr_ll  sll;
 berr itf_raw_socket_init(char *ifname)
 
 {
-    if(ifname== NULL)
+
+    if(ifname == NULL)
         return E_SUCCESS;
 
     int sockfd = socket(PF_PACKET, SOCK_RAW, 0);

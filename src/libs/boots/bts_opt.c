@@ -28,7 +28,7 @@ dopt_lookup(char *name)
         return NULL;
     }
 
-    for (i = 0; i < MOD_MAX; i++)
+    for (i = 0; i < OPT_MAX; i++)
     {
         if (!strcasecmp(name, dopt_array[i].name))
         {

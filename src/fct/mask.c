@@ -26,7 +26,7 @@ berr mask_rule_add(uint32_t id,  uint32_t mask, luna_acl_t *acl)
     }
     
     mask_rule_t *rule = &(rule_tab.rules[id]);
-   
+
     rule->id = id;
     rule->mask = mask;
 
@@ -121,7 +121,7 @@ berr luna_mask(hytag_t *hytag)
         debug("OPT: mask_url  ===================================================================");
         debug("rule->mask:0x%x, rule->mask & hytag->acl.mask:0x%x", rule->mask, rule->mask & hytag->acl.mask);
 
-        if (hytag->acl.mask == (rule->mask & hytag->acl.mask)) {
+        if (rule->mask == (rule->mask & hytag->acl.mask)) {
             debug("OPT: mask_url  ===================================================================");
             ACL_HIT(rule->acl);
             HYTAG_ACL_MERGE(hytag->acl, rule->acl);

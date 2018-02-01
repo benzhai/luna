@@ -134,7 +134,7 @@ void mask_cmd_config_write(struct vty *vty)
 		if(rule && rule->used)
 		{
             luna_acl_string(&rule->acl, acl_str);
-        	vty_out(vty, "%-6d 0x%.8x %s%s", rule->id, rule->mask, acl_str, VTY_NEWLINE);    
+        	vty_out(vty, "mask add %d 0x%x %s%s", rule->id, rule->mask, acl_str, VTY_NEWLINE);    
 		}
     }
     return ;
