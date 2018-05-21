@@ -5,7 +5,7 @@
 
 int bts_ipaddr_cmp(void *val1, void *val2);
 int bts_str_cmp(void *val1, void * val2);
-void bts_ip_string(uint32_t ip, char *str);
+void bts_ip4_string(uint32_t ip, char *str);
 
 #define BSWT_STR_SZ 6
 berr bswt_parse(char *str, bswt *val);

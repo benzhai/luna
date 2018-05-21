@@ -18,11 +18,11 @@
 #include "bts_debug.h"
 
 netseg_t *netseg = NULL;
-luna_acl_t netseg_default_acl;
+rule_act_t netseg_default_act;
 
-#define NETSEG_STAT_INC(_index)         bts_u64_inc(&(netseg[_index].net.acl.cnt))
-#define NETSEG_STAT_DEC(_index)         bts_u64_dec(&(netseg[_index].net.acl.cnt))
-#define NETSEG_STAT_SET(_index, _val)   bts_u64_set(&(netseg[_index].net.acl.cnt), _val))
+#define NETSEG_STAT_INC(_index)         bts_u64_inc(&(netseg[_index].net.act.cnt))
+#define NETSEG_STAT_DEC(_index)         bts_u64_dec(&(netseg[_index].net.act.cnt))
+#define NETSEG_STAT_SET(_index, _val)   bts_u64_set(&(netseg[_index].net.act.cnt), _val))
 
 #define NETSEG_RULE_LOCK(_index)        bts_lock_lock(&(netseg[_index].lock))
 #define NETSEG_RULE_UNLOCK(_index)      bts_lock_unlock(&(netseg[_index].lock))
@@ -44,7 +44,7 @@ berr api_net_add(net_t *net)
     DBG_INFO(MOD_FCT, "netseg[%d].net.index(0x%x)\n", index, netseg[index].net.index);
     DBG_INFO(MOD_FCT, "netseg[%d].net.ip(0x%x)\n", index, netseg[index].net.ip);
     DBG_INFO(MOD_FCT, "netseg[%d].net.mask(0x%x)\n", index, netseg[index].net.mask);
-    DBG_INFO(MOD_FCT, "netseg[%d].net.acl.action(0x%x)\n", index, netseg[index].net.acl.actions);
+    DBG_INFO(MOD_FCT, "netseg[%d].net.act.action(0x%x)\n", index, netseg[index].net.act.actions);
     NETSEG_RULE_UNLOCK(index);
     return E_SUCCESS;
 }
@@ -64,7 +64,7 @@ berr api_net_del(uint32_t index)
     DBG_INFO(MOD_FCT, "netseg[%d].net.index(0x%x)\n", index, netseg[index].net.index);
     DBG_INFO(MOD_FCT, "netseg[%d].net.ip(0x%x)\n", index, netseg[index].net.ip);
     DBG_INFO(MOD_FCT, "netseg[%d].net.mask(0x%x)\n", index, netseg[index].net.mask);
-    DBG_INFO(MOD_FCT, "netseg[%d].net.acl.action(0x%x)\n", index, netseg[index].net.acl.actions);
+    DBG_INFO(MOD_FCT, "netseg[%d].net.act.action(0x%x)\n", index, netseg[index].net.act.actions);
     NETSEG_RULE_UNLOCK(index);
     return E_SUCCESS;
 }
@@ -89,7 +89,7 @@ berr  api_net_get(uint32_t index, net_t *net, uint8_t *effect)
     DBG_INFO(MOD_FCT, "netseg[%d].net.index(0x%x)\n", index, netseg[index].net.index);
     DBG_INFO(MOD_FCT, "netseg[%d].net.ip(0x%x)\n", index, netseg[index].net.ip);
     DBG_INFO(MOD_FCT, "netseg[%d].net.mask(0x%x)\n", index, netseg[index].net.mask);
-    DBG_INFO(MOD_FCT, "netseg[%d].net.acl.action(0x%x)\n", index, netseg[index].net.acl.actions);
+    DBG_INFO(MOD_FCT, "netseg[%d].net.act.action(0x%x)\n", index, netseg[index].net.act.actions);
 	DBG_INFO(MOD_FCT, "netseg[%d].effective(%d)\n", index, netseg[index].effective);
     NETSEG_RULE_UNLOCK(index);
 	return E_SUCCESS;
@@ -103,13 +103,13 @@ berr api_net_clear_statistics(uint32_t index)
     }
 
     NETSEG_RULE_LOCK(index);
-    bts_u64_set(&(netseg[index].net.acl.cnt), 0); 
-    bts_u64_set(&(netseg[index].net.acl.vcnt), 0);
+    bts_u64_set(&(netseg[index].net.act.cnt), 0); 
+
     DBG_INFO(MOD_FCT, "netseg[%d].effective(%d)\n", index, netseg[index].effective);
     DBG_INFO(MOD_FCT, "netseg[%d].net.index(0x%x)\n", index, netseg[index].net.index);
     DBG_INFO(MOD_FCT, "netseg[%d].net.ip(0x%x)\n", index, netseg[index].net.ip);
     DBG_INFO(MOD_FCT, "netseg[%d].net.mask(0x%x)\n", index, netseg[index].net.mask);
-    DBG_INFO(MOD_FCT, "netseg[%d].net.acl.action(0x%x)\n", index, netseg[index].net.acl.actions);
+    DBG_INFO(MOD_FCT, "netseg[%d].net.act.action(0x%x)\n", index, netseg[index].net.act.actions);
     NETSEG_RULE_UNLOCK(index);
 	return E_SUCCESS;
 }
@@ -172,15 +172,15 @@ berr api_net_dp_match(uint32_t index, uint32_t ip)
 
 
 
-berr api_netseg_default_act_set(luna_acl_t *acl)
+berr api_netseg_default_act_set(rule_act_t *act)
 {
-	memcpy(&netseg_default_acl, acl, sizeof(luna_acl_t));
+	memcpy(&netseg_default_act, act, sizeof(rule_act_t));
 	return E_SUCCESS;
 }
 
-berr api_netseg_default_act_get(luna_acl_t *acl)
+berr api_netseg_default_act_get(rule_act_t *act)
 {
-	memcpy(acl, &netseg_default_acl, sizeof(luna_acl_t));
+	memcpy(act, &netseg_default_act, sizeof(rule_act_t));
 	return E_SUCCESS;
 }
 

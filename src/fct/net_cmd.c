@@ -87,7 +87,7 @@ static int net_cmd_add(struct vty *vty, const char *index_str, const char *ip_st
     net.ip    = ip;
     net.mask  = ntohl(mask.s_addr);
 
-    if(luna_acl_parse(&act_str, 1, &net.acl))
+    if(rule_act_parse(&act_str, 1, &net.act))
     {
         return CMD_ERR_NO_MATCH;
     }
@@ -171,7 +171,7 @@ DEFUN(net_del_all,
 
 static void net_dump(struct vty *vty, net_t *net)
 {
-    char acl_str[LUNA_ACL_STR_SZ] = {0};
+    char act_str[LUNA_ACL_STR_SZ] = {0};
     struct in_addr netmask;
 
     if ((NULL == vty) || (NULL == net))
@@ -179,16 +179,15 @@ static void net_dump(struct vty *vty, net_t *net)
         return;
     }
 
-    luna_acl_string(&net->acl, acl_str);
+    rule_act_string(&net->act, act_str);
     netmask.s_addr = htonl(net->mask);
-    vty_out(vty, "%-8d %d.%d.%d.%d/%-15d	%-16s %-16lu %-16lu %-16lu%s", net->index,
+    vty_out(vty, "%-8d %d.%d.%d.%d/%-15d	%-16s %-16lu%s", net->index,
             (net->ip >> 24) & 0xff,
             (net->ip >> 16) & 0xff,
             (net->ip >>  8) & 0xff,
             (net->ip >>  0) & 0xff,
-            ip_masklen (netmask), acl_str,
-            (uint64_t) net->acl.cnt, (uint64_t) net->acl.vcnt,
-            (uint64_t) net->acl.pushed_cnt, VTY_NEWLINE);
+            ip_masklen (netmask), act_str,
+            (uint64_t) net->act.cnt, VTY_NEWLINE);
 }
 
 static int net_cmd_show(struct vty *vty, const char *index_str)
@@ -236,12 +235,10 @@ static int net_cmd_show_all(struct vty *vty)
 	uint8_t effect;
     
     uint64_t cnt_t=0;
-    uint64_t none_drop_t= 0;
-    uint64_t pushed_t = 0;
     
 
     memset(&net, 0, sizeof(net_t));
-	vty_out(vty, "%-8s %-23s	%-16s %-16s %-20s %-20s %s","index", "ip/mask","action", "cnt", "none-drop", "pushed",VTY_NEWLINE);
+	vty_out(vty, "%-8s %-23s	%-16s %-16s %s","index", "ip/mask","action", "cnt", VTY_NEWLINE);
     vty_out(vty, "----------------------------------------------------------------%s", VTY_NEWLINE);
     for ( i = 0; i < NETSEG_RULE_NUM_MAX; i++ )
     {
@@ -255,14 +252,12 @@ static int net_cmd_show_all(struct vty *vty)
 		if (NETSEG_RULE_EFFECTIVE == effect)
 		{
 			net_dump(vty, &net);
-            cnt_t += net.acl.cnt;
-            none_drop_t += net.acl.vcnt;
-            pushed_t += net.acl.pushed_cnt;
+            cnt_t += net.act.cnt;
 		}
 	}
     vty_out(vty, "===================================================================================%s", VTY_NEWLINE);
-    vty_out(vty, "%-8s %-23s	%-16s %-16lu %-16lu %-16lu%s","Total", "NULL", "NULL",
-                                            cnt_t, none_drop_t, pushed_t, VTY_NEWLINE);
+    vty_out(vty, "%-8s %-23s	%-16s %-16lu %s","Total", "NULL", "NULL",
+                                            cnt_t, VTY_NEWLINE);
     return CMD_SUCCESS;
 }
 
@@ -345,14 +340,14 @@ DEFUN(net_clear_statistics_all,
 static int cmd_netseg_default_act_set(struct vty *vty, const char *act_str)
 {
 	int ret = 0;
-	luna_acl_t acl;
-    memset(&acl, 0, sizeof(luna_acl_t));
+	rule_act_t act;
+    memset(&act, 0, sizeof(rule_act_t));
 	
-	if(luna_acl_parse(&act_str, 1, &acl))
+	if(rule_act_parse(&act_str, 1, &act))
     {
         return CMD_ERR_NO_MATCH;
     }
-	ret = api_netseg_default_act_set(&acl);
+	ret = api_netseg_default_act_set(&act);
 	if (ret)
     {
         vty_out(vty, "netseg set default action fail:(%s)%s", berr_msg(ret), VTY_NEWLINE);
@@ -387,7 +382,7 @@ static int cmd_write_snet_file(struct vty *vty, const char *file_name)
 	int i;
 	net_t net;
 	uint8_t effect = 0;
-	char acl_str[LUNA_ACL_STR_SZ] = {0};
+	char act_str[LUNA_ACL_STR_SZ] = {0};
     struct in_addr netmask;
 
 	if (NULL == file_name)
@@ -403,7 +398,7 @@ static int cmd_write_snet_file(struct vty *vty, const char *file_name)
 	}
 	
 	memset(&net, 0, sizeof(net_t));
-	fprintf(fp, "%-8s %-23s	%-16s %-16s %-20s %-20s\n","index", "ip/mask","action", "cnt", "none-drop", "pushed");
+	fprintf(fp, "%-8s %-23s	%-16s %-16s\n","index", "ip/mask","action", "cnt");
 	
 	for ( i = 0; i < NETSEG_RULE_NUM_MAX; i++ )
 	{
@@ -416,16 +411,15 @@ static int cmd_write_snet_file(struct vty *vty, const char *file_name)
 		}
 		if (NETSEG_RULE_EFFECTIVE == effect)
 		{
-    		luna_acl_string(&net.acl, acl_str);
+    		rule_act_string(&net.act, act_str);
     		netmask.s_addr = htonl(net.mask);
-   			fprintf(fp, "%-8d %d.%d.%d.%d/%-15d	%-16s %-16lu %-16lu %-16lu\n", net.index,
+   			fprintf(fp, "%-8d %d.%d.%d.%d/%-15d	%-16s %-16lu\n", net.index,
             (net.ip >> 24) & 0xff,
             (net.ip >> 16) & 0xff,
             (net.ip >>  8) & 0xff,
             (net.ip >>  0) & 0xff,
-            ip_masklen (netmask), acl_str,
-            (uint64_t) net.acl.cnt, (uint64_t) net.acl.vcnt,
-            (uint64_t) net.acl.pushed_cnt);
+            ip_masklen (netmask), act_str,
+            (uint64_t) net.act.cnt);
 		}
 	}
 
@@ -456,25 +450,25 @@ DEFUN(write_snet,
 void net_cmd_config_write(struct vty *vty)
 {
     int ret = 0;
-    char acl_str[LUNA_ACL_STR_SZ] = {0};
+    char act_str[LUNA_ACL_STR_SZ] = {0};
     struct in_addr netmask;
     net_t net;
 	uint8_t effect = 0;
     int i;
-	luna_acl_t acl;
-    memset(&acl, 0, sizeof(luna_acl_t));
+	rule_act_t act;
+    memset(&act, 0, sizeof(rule_act_t));
 
-	ret = api_netseg_default_act_get(&acl);
+	ret = api_netseg_default_act_get(&act);
 	if (ret)
     {
         vty_out(vty, "netseg get default action fail:(%s)%s", berr_msg(ret), VTY_NEWLINE);
         return;
     }
 
-    if (0 != acl.actions) 
+    if (0 != act.actions) 
 	{
-		luna_acl_string(&acl, acl_str);
-		vty_out(vty, "snet default %s%s", acl_str, VTY_NEWLINE);
+		rule_act_string(&act, act_str);
+		vty_out(vty, "snet default %s%s", act_str, VTY_NEWLINE);
 	}
     for ( i = 0; i < NETSEG_RULE_NUM_MAX; i++ )
     {
@@ -487,7 +481,7 @@ void net_cmd_config_write(struct vty *vty)
         }
         else
         {
-            luna_acl_string(&net.acl, acl_str);
+            rule_act_string(&net.act, act_str);
             netmask.s_addr = htonl(net.mask);
 			
 			if (NETSEG_RULE_EFFECTIVE == effect)
@@ -497,7 +491,7 @@ void net_cmd_config_write(struct vty *vty)
 	                    (net.ip >> 16) & 0xff,
 	                    (net.ip >>  8) & 0xff,
 	                    (net.ip >>  0) & 0xff,
-	                    ip_masklen (netmask), acl_str,
+	                    ip_masklen (netmask), act_str,
 	                    VTY_NEWLINE);
 			}
 		}

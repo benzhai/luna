@@ -73,7 +73,7 @@ bts_listnode_add_sort (struct bts_list *bts_list, void *val)
   struct bts_listnode *n;
   struct bts_listnode *new;
   
-  assert (val != NULL);
+  //assert (val != NULL);
   
   new = bts_listnode_new ();
   new->data = val;

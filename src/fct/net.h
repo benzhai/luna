@@ -28,7 +28,7 @@ typedef struct {
     uint32_t index;
 	uint32_t ip;
 	uint32_t mask;
-    luna_acl_t acl;
+    rule_act_t act;
 } net_t;
 
 typedef struct {
@@ -48,9 +48,9 @@ berr api_net_clear_statistics(uint32_t index);
 
 berr api_get_netseg_effect(uint32_t index, uint8_t *effect);
 
-berr api_netseg_default_act_set(luna_acl_t *acl);
+berr api_netseg_default_act_set(rule_act_t *acl);
 
-berr api_netseg_default_act_get(luna_acl_t *acl);
+berr api_netseg_default_act_get(rule_act_t *acl);
 
 /* dp use */
 berr api_net_dp_match(uint32_t index, uint32_t ip);

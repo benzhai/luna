@@ -8,6 +8,12 @@
     OPT_DEF(OPT_MASK_URL, "dump ori & ref url when mask rule matched"),
 
 #define FCT_CNT_CUSTOM   \
+    FCT_PKTS, \
+    FCT_UNMATCHED, \
+    ACL_DROP, \
+    ACL_NULL, \
+    ACL_SAMP_HIT, \
+    ACL_SAMP_UNHIT, \
     /* VSR Module counters */ \
     VSR_PKTS, /* VSR module input packets*/ \
     VSR_UNURLPKTS, /* take no url packet number */ \
@@ -40,6 +46,13 @@
     URL_NOTZERO, \
     URL_MATCHED, \
     URL_DISMATCH, \
+    /* URI Module */ \
+    URI_PKTS, \
+    URI_PARAM, \
+    URI_ZERO, \
+    URI_NOTZERO, \
+    URI_MATCHED, \
+    URI_DISMATCH, \
     \
     /* MASK Module */ \
     MASK_PKTS, \
@@ -50,6 +63,12 @@
     MASK_DISMATCH, 
 
 #define FCT_CNT_DEF_CUSTOM   \
+    CNT_DEF(FCT_PKTS), \
+    CNT_DEF(FCT_UNMATCHED), \
+    CNT_DEF(ACL_DROP), \
+    CNT_DEF(ACL_NULL), \
+    CNT_DEF(ACL_SAMP_HIT), \
+    CNT_DEF(ACL_SAMP_UNHIT), \
     /* VSR Module counters */ \
     CNT_DEF(VSR_PKTS), /* VSR module input packets*/ \
     CNT_DEF(VSR_UNURLPKTS), /* take no url packet number */ \
@@ -82,6 +101,14 @@
     CNT_DEF(URL_NOTZERO), \
     CNT_DEF(URL_MATCHED), \
     CNT_DEF(URL_DISMATCH), \
+    \
+    /* URI Module */ \
+    CNT_DEF(URI_PKTS), \
+    CNT_DEF(URI_PARAM), \
+    CNT_DEF(URI_ZERO), \
+    CNT_DEF(URI_NOTZERO), \
+    CNT_DEF(URI_MATCHED), \
+    CNT_DEF(URI_DISMATCH), \
     \
     /* MASK Module */ \
     CNT_DEF(MASK_PKTS), \

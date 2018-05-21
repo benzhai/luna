@@ -10,7 +10,7 @@
 #include "bts_cnt.h"
 #include "net.h"
 
-extern luna_acl_t netseg_default_acl;
+extern rule_act_t netseg_default_act;
 berr netseg_dp_match(uint32_t ip, net_t **rule)
 {
     int i;
@@ -78,7 +78,7 @@ berr netseg_dp_process(hytag_t *hytag)
         cnt_inc(NET_UNMATCHPKTS);
         hytag->match &= 0xfffe;
 		hytag->snet_hit_id = 255;
-        HYTAG_ACL_MERGE(hytag->acl, netseg_default_acl); 
+        HYTAG_ACT_DUP(hytag->act, netseg_default_act); 
     }
     else
     {
@@ -87,20 +87,9 @@ berr netseg_dp_process(hytag_t *hytag)
         hytag->match |= 1;
 		hytag->snet_hit_id = rule->index;
 
-		ACL_HIT(rule->acl);
-
-
-		if (0 == (hytag->acl.actions & ACT_DROP))
-	
-		{
-			ACL_PRE_NOT_DROP_HIT(rule->acl);
-		}
-        if(hytag->pushed_second_assert)
-        {
-            ACL_PUSHED_ASSERT_HIT(rule->acl);
-        }
+		//FCT_HIT(rule);
         
-		HYTAG_ACL_MERGE(hytag->acl, rule->acl);
+		HYTAG_ACT_DUP(hytag->act, rule->act);
     }
     return E_SUCCESS; 
 }

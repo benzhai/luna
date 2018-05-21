@@ -26,20 +26,18 @@ DEFUN(mask_add,
 
     int index = strtoul(argv[0], NULL, 0);
 	
-
     int mask =  strtoul(argv[1], NULL, 0);
 
+    rule_act_t act;
+    memset(&act, 0, sizeof(rule_act_t));
 
-    luna_acl_t acl;
-    memset(&acl, 0, sizeof(luna_acl_t));
-
-	if(luna_acl_parse(&argv[2], argc - 2, &acl))
+	if(rule_act_parse(&argv[2], argc - 2, &act))
     {
 
         return CMD_ERR_NO_MATCH;
     }
     
-    rv =  mask_rule_add(index, mask, &acl);
+    rv =  mask_rule_add(index, mask, &act);
  
 	if(rv != E_SUCCESS)
 	{
@@ -77,8 +75,6 @@ DEFUN(mask_del_all,
       "mask del all",
       MASK_EXPR)
 {
-
-
     int i;
     for(i=0; i <MAX_MASK_RULE; i++)
     {
@@ -91,27 +87,26 @@ DEFUN(mask_del_all,
 
 DEFUN(show_mask_all,
       show_mask_all_cmd,
-      "show mask all",
+      "show mask",
       MASK_EXPR)
 {
 
     mask_rule_t *rule = NULL;
     int i;
-    char acl_str[LUNA_ACL_STR_SZ];
+    char act_str[LUNA_ACL_STR_SZ];
 
-    memset(acl_str, 0, LUNA_ACL_STR_SZ);
+    memset(act_str, 0, LUNA_ACL_STR_SZ);
     
-    vty_out(vty, "%-6s %-16s %-16s %-16s %-6s %-10s %s%s", "ID", "CNT", "DROP", "PUSH", "RATE", "MASK",  "ACTIONS",   VTY_NEWLINE);
+    vty_out(vty, "%-6s %-16s %-10s        %s%s", "ID", "CNT", "MASK", "ACTIONS", VTY_NEWLINE);
     for(i=0; i < MAX_MASK_RULE; i++)
     {
         rule = mask_rule_get(i);
 
 		if(rule && rule->used)
 		{
-            luna_acl_string(&rule->acl, acl_str);
-        	vty_out(vty, "%-6d %-16ld %-16ld %-16ld %-6u 0x%.8x %s%s", rule->id, (uint64_t) rule->acl.cnt, 
-                    (uint64_t)rule->acl.vcnt, (uint64_t)rule->acl.pushed_cnt, 
-                    rule->acl.rate, rule->mask, acl_str, VTY_NEWLINE);    
+            rule_act_string(&rule->act, act_str);
+        	vty_out(vty, "%-6d %-16ld 0x%.8x        %s%s", rule->id, 
+                   (uint64_t) rule->act.cnt, rule->mask, act_str, VTY_NEWLINE);    
 		}
         
     }
@@ -124,8 +119,8 @@ void mask_cmd_config_write(struct vty *vty)
     mask_rule_t *rule = NULL;
     int i;
 
-    char acl_str[LUNA_ACL_STR_SZ];
-    memset(acl_str, 0, LUNA_ACL_STR_SZ);
+    char act_str[LUNA_ACL_STR_SZ];
+    memset(act_str, 0, LUNA_ACL_STR_SZ);
 
     for(i=0; i < MAX_MASK_RULE; i++)
     {
@@ -133,8 +128,8 @@ void mask_cmd_config_write(struct vty *vty)
 
 		if(rule && rule->used)
 		{
-            luna_acl_string(&rule->acl, acl_str);
-        	vty_out(vty, "mask add %d 0x%x %s%s", rule->id, rule->mask, acl_str, VTY_NEWLINE);    
+            rule_act_string(&rule->act, act_str);
+        	vty_out(vty, "mask add %d 0x%x %s%s", rule->id, rule->mask, act_str, VTY_NEWLINE);    
 		}
     }
     return ;

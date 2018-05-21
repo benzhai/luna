@@ -1,5 +1,6 @@
 #include <stdio.h>
 #include <string.h>
+#include <arpa/inet.h>
 
 #include "boots.h"
 #include "bts_debug.h"
@@ -42,9 +43,93 @@ bts_str_cmp(void *val1, void *val2)
     return strcmp(val1, val2);
 }
 
+uint32_t bts_ip4_parse(const char *str, ipv4_t *ip4)
+{
+
+    int dots = 0;
+    register u_long addr = 0;
+    register u_long val = 0, base = 10;
+
+    if ((NULL == str) || (NULL == ip4)) {
+        return 1;
+    }
+
+    if (ADDR_STR_SZ < strlen(str)) {
+        return 1;
+    }
+
+    do {
+        register char c = *str;
+
+        switch (c){
+        case '0': case '1': case '2': case '3': case '4': case '5':
+        case '6': case '7': case '8': case '9':
+            val = (val * base) + (c - '0');
+            break;
+        case '.':
+            if (++dots > 3)
+            return 0;
+        case '\0':
+            if (val > 255)
+            return 0;
+            addr = addr << 8 | val;
+            val = 0;
+            break;
+        default:
+            return 0;
+        }
+    } while (*str++) ;
+
+    if (dots < 3)
+        addr <<= 8 * (3 - dots);
+
+    if (ip4)
+        *ip4 = htonl (addr);
+
+    return 1;
+}
+
+uint32_t bts_net4_parse(const char *str, net4_t *net4)
+{
+    //char addr_str[ADDR_STR_SZ];
+    //char mask_str[MASK_STR_SZ];
+    char *pnt;
+    int slen = 0, alen = 0, mlen = 0;
+
+    slen = strlen(str);
+
+    if (slen > (ADDR_STR_SZ  + 1 + MASK_STR_SZ)) {
+        return 1;
+    }
+
+    pnt = strchr(str, '/');
+
+    if (pnt == NULL) {
+        if (bts_ip4_parse(str, &net4->addr)) {
+            return 1;
+        }
+        net4->mask = NET4_MASK_UNI;
+        return 0;
+    } else {
+        alen = pnt - str;
+
+        if (alen > ADDR_STR_SZ) {
+            return 1;
+        }
+
+        mlen = slen - (pnt - str) - 1;
+
+        if (mlen > MASK_STR_SZ) {
+            return 1;
+        }
 
 
-void bts_ip_string(uint32_t ip, char *str)
+    }
+
+    return 0;
+}
+
+void bts_ip4_string(uint32_t ip, char *str)
 {
 	if (NULL == str)
 	{
@@ -234,5 +319,7 @@ bts_hash(void *buff, uint32_t len)
 {
     return crc32((uint8_t*) buff, len);
 }
+
+
 
 /* End of file */

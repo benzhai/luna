@@ -18,9 +18,9 @@
 
 mask_rule_tab_t  rule_tab;
 
-berr mask_rule_add(uint32_t id,  uint32_t mask, luna_acl_t *acl)
+berr mask_rule_add(uint32_t id,  uint32_t mask, rule_act_t *act)
 {
-    if(id >= MAX_MASK_RULE || acl == NULL) 
+    if(id >= MAX_MASK_RULE || act == NULL) 
     {
         return E_PARAM;
     }
@@ -30,7 +30,7 @@ berr mask_rule_add(uint32_t id,  uint32_t mask, luna_acl_t *acl)
     rule->id = id;
     rule->mask = mask;
 
-    memcpy(&rule->acl, acl, sizeof(luna_acl_t));
+    memcpy(&rule->act, act, sizeof(rule_act_t));
     rule->used = 1;
 
     if(id >= rule_tab.inuse)
@@ -77,14 +77,14 @@ berr luna_mask(hytag_t *hytag)
         return E_PARAM;
     }
 
-    if (hytag->acl.mask == 0) {
+    if (hytag->act.mask == 0) {
         CNT_INC(MASK_ZERO);
         return E_SUCCESS;
     }
 
     CNT_INC(MASK_NOTZERO);
 
-    debug("mask=0x%x", hytag->acl.mask);
+    debug("mask=0x%x", hytag->act.mask);
     debug("rule_tab.inuse:%u", rule_tab.inuse);
 
     for (i = 0; i < rule_tab.inuse; i++) 
@@ -95,7 +95,7 @@ berr luna_mask(hytag_t *hytag)
             uint32_t id;
             uint32_t used;
             uint32_t mask;
-            luna_acl_t acl;
+            rule_act_t acl;
         } mask_rule_t;
 
         typedef struct {
@@ -105,38 +105,27 @@ berr luna_mask(hytag_t *hytag)
             bts_atomic64_t vcnt;
             bts_atomic64_t pushed_cnt;
             char url[LUNA_URL_LEN_MAX];
-        } luna_acl_t;
+        } rule_act_t;
          *
          */
         rule = &rule_tab.rules[i];
         debug("rule->id             :%u", rule->id);
         debug("rule->used           :%u", rule->used);
         debug("rule->mask           :%u", rule->mask);
-        debug("rule->acl.actions    :0x%x", rule->acl.actions);
-        debug("rule->acl.mask       :0x%x", rule->acl.mask);
-        debug("rule->acl.url        :%s", rule->acl.url);
+        debug("rule->act.actions    :0x%x", rule->act.actions);
+        debug("rule->act.mask       :0x%x", rule->act.mask);
+        debug("rule->act.acl        :%d", rule->act.acl);
+       
         if (0 == rule->used) {
             continue;
         }
-        debug("OPT: mask_url  ===================================================================");
-        debug("rule->mask:0x%x, rule->mask & hytag->acl.mask:0x%x", rule->mask, rule->mask & hytag->acl.mask);
-
-        if (rule->mask == (rule->mask & hytag->acl.mask)) {
+     
+        if (rule->mask == (rule->mask & hytag->act.mask)) {
             debug("OPT: mask_url  ===================================================================");
-            ACL_HIT(rule->acl);
-            HYTAG_ACL_MERGE(hytag->acl, rule->acl);
+            //FCT_HIT(rule);
+            HYTAG_ACT_DUP(hytag->act, rule->act);
             CNT_INC(MASK_MATCHED);
 
-            if (OPT_IS_SELECTED(OPT_MASK_URL)) 
-            {
-                debug("OPT: mask_url  ===================================================================");
-                debug("ORI_URL:");
-                luna_url_dump(&hytag->ori_url);
-                debug("REF_URL:");
-                luna_url_dump(&hytag->ref_url);
-                debug("REDIR_URL:%s", hytag->acl.url); 
-                debug("--------------------------------------------------------------------------------------------------------\n");
-            }
             return E_SUCCESS; 
         }
     }

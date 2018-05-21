@@ -10,7 +10,7 @@
 
 url_t ori_url_r, ref_url_r;
 
-berr url_rule_add(url_t *url_r, uint32_t id,  char *url,  char * cli_pattern, luna_acl_t *acl)
+berr url_rule_add(url_t *url_r, uint32_t id,  char *url,  char * cli_pattern, rule_act_t *act)
 {
     if(id >= MAX_URL_RULE || url == NULL) 
     {
@@ -27,8 +27,6 @@ berr url_rule_add(url_t *url_r, uint32_t id,  char *url,  char * cli_pattern, lu
         usleep(300);
         free(pcre_n->pattern);
         pcre_free(pcre_n->cre);
-        
-        
     }
    
     {
@@ -42,7 +40,7 @@ berr url_rule_add(url_t *url_r, uint32_t id,  char *url,  char * cli_pattern, lu
 			return E_FAIL;
 		}
 		
-        memcpy(&pcre_n->acl, acl, sizeof(luna_acl_t));
+        memcpy(&pcre_n->act, act, sizeof(rule_act_t));
 		pcre_n->used =1;
 		
     }
@@ -119,35 +117,15 @@ berr  luna_url(url_t *url_r, hytag_t *hytag, char *url_str, int url_len)
             if(compare > 0)
             {
                 CNT_INC(URL_MATCHED);
-                ACL_HIT(urlcre->acl); 
-                
-                if (ACT_IS_VAILD(urlcre->acl.actions, ACT_REDIR))
+                //FCT_HIT(urlcre); 
+
+                if (compare > 1)
                 {
-                    if (ACL_CNT_GET(urlcre->acl)% urlcre->acl.sample < 1)
-                    {
-                        if (compare > 1)
-                        {
-                            memcpy(hytag->reg, (url_str + ovector[2]), (ovector[3] - ovector[2])); 
-                        }
-                        // push statistics
-                        ACL_PUSHED_ASSERT_HIT(urlcre->acl);
-                        HYTAG_ACL_MERGE(hytag->acl, urlcre->acl);
-                    }
-                    else
-                    {
-                        // drop statistics
-                        ACL_PRE_NOT_DROP_HIT (urlcre->acl);
-                    }
-            
+                    memcpy(hytag->reg, (url_str + ovector[2]), (ovector[3] - ovector[2])); 
                 }
-                else
-                {
-                    if (compare > 1)
-                    {
-                        memcpy(hytag->reg, (url_str + ovector[2]), (ovector[3] - ovector[2])); 
-                    }
-                    HYTAG_ACL_MERGE(hytag->acl, urlcre->acl);
-                }
+
+                HYTAG_ACT_DUP(hytag->act, urlcre->act);
+
                 return E_SUCCESS;
             }
         }
@@ -180,14 +158,14 @@ berr  luna_ref_url(hytag_t *hytag)
     return luna_url(&ref_url_r, hytag, hytag->ref_url.url, strlen(hytag->ref_url.url));
 }
 
-berr ori_url_rule_add(uint32_t id,  char *url,  char * cli_pattern, luna_acl_t *acl)
+berr ori_url_rule_add(uint32_t id,  char *url,  char * cli_pattern, rule_act_t *act)
 {
-    return url_rule_add(&ori_url_r, id, url, cli_pattern, acl);
+    return url_rule_add(&ori_url_r, id, url, cli_pattern, act);
 }
 
-berr ref_url_rule_add(uint32_t id,  char *url,  char * cli_pattern, luna_acl_t *acl)
+berr ref_url_rule_add(uint32_t id,  char *url,  char * cli_pattern, rule_act_t *act)
 {
-    return url_rule_add(&ref_url_r, id, url, cli_pattern, acl);
+    return url_rule_add(&ref_url_r, id, url, cli_pattern, act);
 }
 
 berr ori_url_rule_del(uint32_t id)

@@ -37,12 +37,12 @@ DEFUN(ori_url_add,
     char  lastchar = '\0';
     int i;
     int len = strlen(exprstr);
-    luna_acl_t acl;
+    rule_act_t acl;
 
 
-    memset(&acl, 0, sizeof(luna_acl_t));
+    memset(&acl, 0, sizeof(rule_act_t));
 
-	if(luna_acl_parse(&argv[2], argc - 2, &acl))
+	if(rule_act_parse(&argv[2], argc - 2, &acl))
     {
     	//free(straction);
         return CMD_ERR_NO_MATCH;
@@ -136,17 +136,17 @@ DEFUN(ori_url_del_all,
 
 DEFUN(show_ori_url_all,
       show_ori_url_all_cmd,
-      "show url all",
+      "show url",
       URL_EXPR)
 {
 
     struct pcre_s *pcreptr = NULL;
     int i;
-    char acl_str[LUNA_ACL_STR_SZ];
+    char act_str[LUNA_ACL_STR_SZ];
 
-    memset(acl_str, 0, LUNA_ACL_STR_SZ);
+    memset(act_str, 0, LUNA_ACL_STR_SZ);
     
-    vty_out(vty, "%-6s %-16s %-16s %-16s %-6s %-64s %s %s", "ID", "cnt", "drop", "push", "rate", "URL", "action", VTY_NEWLINE);
+    vty_out(vty, "%-6s %-16s %s %s", "ID", "HIT", "action", VTY_NEWLINE);
     for(i=0; i < MAX_URL_RULE; i++)
     {
         pcreptr = ori_url_rule_get(i);
@@ -157,10 +157,9 @@ DEFUN(show_ori_url_all,
         }
 		if(pcreptr->used)
 		{
-            luna_acl_string(&pcreptr->acl, acl_str);
-        	vty_out(vty, "%-6d %-16ld %-16ld %-16ld %-6u %-64s %s %s", pcreptr->id, (uint64_t) pcreptr->acl.cnt, 
-                    (uint64_t) pcreptr->acl.vcnt, (uint64_t) pcreptr->acl.pushed_cnt, 
-                    pcreptr->acl.rate ,pcreptr->pattern, acl_str, VTY_NEWLINE);    
+            rule_act_string(&pcreptr->act, act_str);
+        	vty_out(vty, "%-6d %-16ld %s %s", 
+                    pcreptr->id, (uint64_t) pcreptr->act.cnt, act_str, VTY_NEWLINE);    
 		}
         
     }
@@ -183,12 +182,12 @@ DEFUN(ref_url_add,
     char  lastchar = '\0';
     int i;
     int len = strlen(exprstr);
-    luna_acl_t acl;
+    rule_act_t acl;
 
 
-    memset(&acl, 0, sizeof(luna_acl_t));
+    memset(&acl, 0, sizeof(rule_act_t));
 
-	if(luna_acl_parse(&argv[2], argc - 2, &acl))
+	if(rule_act_parse(&argv[2], argc - 2, &acl))
     {
     	//free(straction);
         return CMD_ERR_NO_MATCH;
@@ -267,17 +266,17 @@ DEFUN(ref_url_del_all,
 
 DEFUN(show_ref_url_all,
       show_ref_url_all_cmd,
-      "show ref all",
+      "show ref",
       URL_EXPR)
 {
 
     struct pcre_s *pcreptr = NULL;
     int i;
-    char acl_str[LUNA_ACL_STR_SZ];
+    char act_str[LUNA_ACL_STR_SZ];
 
-    memset(acl_str, 0, LUNA_ACL_STR_SZ);
+    memset(act_str, 0, LUNA_ACL_STR_SZ);
     
-    vty_out(vty, "%-6s %-16s %-16s %-16s %-6s %-64s %s %s", "ID", "cnt", "drop", "push", "rate", "URL", "action", VTY_NEWLINE);
+    vty_out(vty, "%-6s %-16s %s %s", "ID", "HIT", "action", VTY_NEWLINE);
     for(i=0; i < MAX_URL_RULE; i++)
     {
         pcreptr = ref_url_rule_get(i);
@@ -288,10 +287,9 @@ DEFUN(show_ref_url_all,
         }
 		if(pcreptr->used)
 		{
-            luna_acl_string(&pcreptr->acl, acl_str);
-        	vty_out(vty, "%-6d %-16ld %-16ld %-16ld %-6u %-64s %s %s", pcreptr->id, (uint64_t) pcreptr->acl.cnt, 
-                    (uint64_t) pcreptr->acl.vcnt, (uint64_t) pcreptr->acl.pushed_cnt, 
-                    pcreptr->acl.rate ,pcreptr->pattern, acl_str, VTY_NEWLINE);    
+            rule_act_string(&pcreptr->act, act_str);
+        	vty_out(vty, "%-6d %-16ld %s %s", pcreptr->id, 
+                    (uint64_t) pcreptr->act.cnt, act_str, VTY_NEWLINE);    
 		}
         
     }
@@ -305,17 +303,17 @@ void url_cmd_config_write(struct vty *vty)
     struct pcre_s *pcreptr = NULL;
     int i;
 
-    char acl_str[LUNA_ACL_STR_SZ];
+    char act_str[LUNA_ACL_STR_SZ];
     for(i=0; i < MAX_URL_RULE; i++)
     {
         pcreptr = ori_url_rule_get(i);
         
         if((pcreptr != NULL) && (pcreptr->used))
         {
-            memset(acl_str, 0, LUNA_ACL_STR_SZ);
-            luna_acl_string(&pcreptr->acl, acl_str);
+            memset(act_str, 0, LUNA_ACL_STR_SZ);
+            rule_act_string(&pcreptr->act, act_str);
 
-            vty_out(vty, "url add %d %s %s %s", pcreptr->id, pcreptr->cli_pattern, acl_str,  VTY_NEWLINE);    
+            vty_out(vty, "url add %d %s %s %s", pcreptr->id, pcreptr->cli_pattern, act_str,  VTY_NEWLINE);    
         } 
     }
 
@@ -324,10 +322,10 @@ void url_cmd_config_write(struct vty *vty)
         pcreptr = ref_url_rule_get(i);
         if((pcreptr != NULL) && (pcreptr->used))
         {
-            memset(acl_str, 0, LUNA_ACL_STR_SZ);
-            luna_acl_string(&pcreptr->acl, acl_str);
+            memset(act_str, 0, LUNA_ACL_STR_SZ);
+            rule_act_string(&pcreptr->act, act_str);
 
-            vty_out(vty, "ref add %d %s %s %s", pcreptr->id, pcreptr->cli_pattern, acl_str,  VTY_NEWLINE);    
+            vty_out(vty, "ref add %d %s %s %s", pcreptr->id, pcreptr->cli_pattern, act_str,  VTY_NEWLINE);    
         } 
     }
     return ;

@@ -20,6 +20,16 @@ typedef uint32_t ipv4_t;
 typedef uint16_t ipv6_t[8];
 typedef unsigned long long  ULL;
 
+#define ADDR_STR_SZ  16
+#define MASK_STR_SZ  3
+
+#define NET4_MASK_UNI 0xffffffff
+
+typedef struct {
+    ipv4_t addr;
+    ipv4_t mask;
+} net4_t;
+
 #define CMD_NODE          VIEW_NODE
 
 typedef enum {

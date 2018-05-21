@@ -9,7 +9,7 @@ typedef struct {
     uint32_t id;
     uint32_t used;
     uint32_t mask;
-    luna_acl_t acl;
+    rule_act_t act;
 } mask_rule_t;
 
 typedef struct
@@ -20,7 +20,7 @@ typedef struct
 
 berr  luna_mask(hytag_t *hytag);
 
-berr mask_rule_add(uint32_t id, uint32_t mask, luna_acl_t *acl);
+berr mask_rule_add(uint32_t id, uint32_t mask, rule_act_t *act);
 
 berr mask_rule_del(uint32_t id);
 
